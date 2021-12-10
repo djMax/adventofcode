@@ -1,22 +1,6 @@
-const openers = { ')': '(', ']': '[', '}': '{', '>': '<' };
-const scores = { ')': 3, ']': 57, '}': 1197, '>': 25137 };
-
-const parse = (line) => line.split('').reduce((stack, char) => {
-  if (!Array.isArray(stack)) {
-    return stack;
-  }
-  if ('([{<'.includes(char)) {
-    stack.push(char);
-  } else if (')]}>'.includes(char)) {
-    if (stack.pop() !== openers[char]) {
-      return char;
-    }
-  }
-  return stack;
-}, []);
-
 // Let's have some fun and make this as compact as possible. I didn't say readable...
-const scoreIllegalLine = line => [parse(line)].map(e => Array.isArray(e) ? 0 : scores[e])[0];
+const parse = input => input.split('').reduce((stack, char, _, chars) => '([{<'.includes(char) ? [...stack, char] : (stack.pop() === { ')': '(', ']': '[', '}': '{', '>': '<' }[char] ? stack : (chars.splice(1), char)), []);
+const scoreIllegalLine = line => [parse(line)].map(e => Array.isArray(e) ? 0 : { ')': 3, ']': 57, '}': 1197, '>': 25137 }[e])[0];
 const scoreIllegalLines = input => input.split('\n').reduce((acc, line) => acc + scoreIllegalLine(line), 0);
 const complete = input => [parse(input)].map(s => Array.isArray(s) ? s.reverse() : null)[0];
 const scoreCompletion = input => input.reduce((acc, char) => 5 * acc + ' ([{<'.indexOf(char), 0);
