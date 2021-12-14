@@ -79,10 +79,9 @@ function answer(instructions, rounds) {
     });
     return updated;
   }, new Array(template.length - 1).fill(0).reduce((acc, _, ix) => inc(acc, template.substring(ix, ix + 2)), {})))
-    .reduce((acc, [pair, count]) => {
-      acc[pair[0]] = (acc[pair[0]] || 0) + count;
-      return acc;
-    }, { [template[template.length - 1]]: 1 })).sort((a, b) => b - a).filter(a => a);
+    .reduce((acc, [pair, count]) => inc(acc, pair[0], count), { [template[template.length - 1]]: 1 }))
+    .sort((a, b) => b - a)
+    .filter(a => a);
   return frequency[0] - frequency[frequency.length - 1];
 }
 
