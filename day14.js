@@ -67,7 +67,7 @@ if (testRun.B !== 1749 || testRun.C !== 298) {
 function answer(instructions, rounds) {
   const inc = (map, k, v = 1) => (map[k] = (map[k] || 0) + v, map);
   const [template, rules] = instructions.split('\n\n').map((inp, ix) => ix ? inp.split('\n').map(s => s.split(' -> ')) : inp.trim());
-  const frequency = Object.values(Object.entries(new Array(rounds).fill(0).reduce((pairs) => {
+  const frequency = Object.values(Object.entries(Array(rounds).fill(0).reduce((pairs) => {
     const updated = { ...pairs };
     rules.forEach(([from, to]) => {
       const existing = pairs[from];
@@ -78,7 +78,7 @@ function answer(instructions, rounds) {
       }
     });
     return updated;
-  }, new Array(template.length - 1).fill(0).reduce((acc, _, ix) => inc(acc, template.substring(ix, ix + 2)), {})))
+  }, Array(template.length - 1).fill(0).reduce((acc, _, ix) => inc(acc, template.substring(ix, ix + 2)), {})))
     .reduce((acc, [pair, count]) => inc(acc, pair[0], count), { [template[template.length - 1]]: 1 }))
     .sort((a, b) => b - a)
     .filter(a => a);
