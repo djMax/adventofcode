@@ -66,7 +66,7 @@ if (testRun.B !== 1749 || testRun.C !== 298) {
 
 function answer(instructions, rounds) {
   const inc = (map, k, v = 1) => (map[k] = (map[k] || 0) + v, map);
-  const [template, rules] = instructions.split('\n\n').map((inp, ix) => ix ? inp.split('\n').map(s => s.split(' -> ')) : inp.trim());
+  const [template, rules] = instructions.split('\n\n').map((inp, ix) => ix ? inp.split('\n').map(s => s.split(' -> ')) : inp);
   const frequency = Object.values(Object.entries(Array(rounds).fill(0).reduce((pairs) => {
     const updated = { ...pairs };
     rules.forEach(([from, to]) => {
