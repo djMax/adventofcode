@@ -36,7 +36,7 @@ function tryPath(xVelocity, yVelocity, evaluator) {
 
 function maxHeight(input) {
   const evaluator = getEvaluator(input);
-  let yVelocity = evaluator.range[1][0];
+  let yVelocity = Math.max(...[Math.abs(evaluator.range[0][1]), Math.abs(evaluator.range[1][1])]);
   while (true) {
     for (let xVelocity = 1; xVelocity <= evaluator.range[1][0]; xVelocity += 1) {
       const maxY = tryPath(xVelocity, yVelocity, evaluator);
@@ -50,9 +50,10 @@ function maxHeight(input) {
 
 function totalPaths(input) {
   const evaluator = getEvaluator(input);
+  const yMax = Math.max(...[Math.abs(evaluator.range[0][1]), Math.abs(evaluator.range[1][1])]);
   let total = 0;
   for (let xV = 1; xV <= evaluator.range[1][0]; xV++) {
-    for (let yV = -1000; yV < 1000; yV++) {
+    for (let yV = evaluator.range[0][1]; yV <= yMax; yV++) {
       if (tryPath(xV, yV, evaluator) >= 0) {
         total++;
       }
