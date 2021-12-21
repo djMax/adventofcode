@@ -45,7 +45,6 @@ function playRecursive(positions, scores, wins, multiplier = 1n) {
     const newScores = [...scores];
     newScores[0] += (newPositions[0] = (newPositions[0] - 1 + r) % 10 + 1);
     if (newScores[0] >= 21) {
-      // p2 still rolls, so we have 27 more universes under this one
       wins[0] += (diceRollMultiples[r] * multiplier);
     } else {
       const newMultiplier = multiplier * diceRollMultiples[r];
