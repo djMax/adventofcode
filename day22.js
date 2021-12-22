@@ -66,19 +66,12 @@ const volumeChange = (n, existing) => existing.reduce((delta, e, ex) => {
   return delta;
 }, 0);
 
-function smartExecute(instructions) {
-  let total = 0;
-  const workingSet = [];
-  // By considering in reverse order, the overlap checking is simplified to just the items "after"
-  // the current one (in the original order)
-  instructions.reverse().forEach((i) => {
-    if (i.on) {
-      total += volume(i.x, i.y, i.z) - volumeChange(i, workingSet);
-    }
-    workingSet.push(i);
-  });
-  return total;
-}
+// By considering in reverse order, the overlap checking is simplified to just the items "after"
+// the current one (in the original order)
+const smartExecute = (instructions) => instructions.reverse().reduce(({ ws, t }, i) => ({
+  t: t + (i.on ? volume(i.x, i.y, i.z) - volumeChange(i, ws) : 0),
+  ws: [...ws, i],
+}), { ws: [], t: 0 }).t;
 
 const testRun = (fn, input, expected) => {
   const actual = fn(readInstructions(input));
