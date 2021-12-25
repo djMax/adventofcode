@@ -257,15 +257,8 @@ add z y`;
 
 const solve = (input, optimalDigit) => input
   .split('\n')
-  .reduce((acc, line) => {
-    if (line.startsWith('inp ')) {
-      acc.push([]);
-    } else {
-      acc[acc.length - 1].push(line);
-    }
-    return acc;
-  }, [])
-  .map((l) => [Number(l[4].split(' ')[2]), Number(l[14].split(' ')[2])])
+  .reduce((acc, line) => (line.startsWith('inp ') ? acc.push([]) : acc[acc.length - 1].push(line), acc), [])
+  .map(l => [Number(l[4].split(' ')[2]), Number(l[14].split(' ')[2])])
   .reduce(({ num, stack }, [addx, addy], index) => {
     if (addx > 0) {
       return { num, stack: [...stack, [addy, index]] };
