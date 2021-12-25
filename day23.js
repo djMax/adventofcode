@@ -11,6 +11,7 @@ const input = `#############
   #########`;
 
 const destinationRooms = { A: 0, B: 1, C: 2, D: 3 };
+const energies = { A: 1, B: 10, C: 100, D: 1000 };
 const isDestinationRoom = (room, amphipod) => destinationRooms[amphipod[0]] === room;
 
 class Rooms {
@@ -117,7 +118,8 @@ ${Array(depth).fill(0).map((_, ix) => {
       }
     }
     this.moves.push(lastMove);
-    this.energy += { A: 1, B: 10, C: 100, D: 1000 }[amphipod[0]];
+    this.energy += energies[amphipod[0]];
+    return this;
   }
 
   isRoomAtTheInn(amphipod) {
@@ -277,7 +279,6 @@ const testRunner = (input, moves) => {
 }
 
 // Try and test that the expected valid move exists in the board states.
-/*
 testRunner(test, [
   ['B2', 'up', 'left', 'left', 'left'],
   ['C', 'up', 'right', 'right', 'down'],
@@ -301,40 +302,36 @@ testRunner(makePart2(test), [
   ['C', 'up', 'right', 'right', 'down', 'down', 'down'],
   ['C2', 'up', 'up', 'right', 'right', 'down', 'down']
 ]);
-*/
 
-function solve(input, notMoreThan = Infinity) {
-  let minSolvedEnergy = notMoreThan;
-  const exploring = {};
-  let minSolution = null;
+function solve(input) {
+  const visited = new Set();
   let iter = 0;
-  const runner = (rooms, depth) => {
-    const vm = Object.keys(rooms.amphipods).sort()
-      .reduce((acc, a) => [...acc, ...rooms.validMoves(a).map(m => [a, m])], []);
-    for (const move of vm) {
-      const newRooms = new Rooms(rooms);
-      newRooms.move(...move);
-      iter++;
-      const solved = newRooms.isSolved();
-      if (solved && newRooms.energy < minSolvedEnergy) {
-        console.log('Solution', newRooms.energy);
-        minSolution = newRooms;
-        minSolvedEnergy = newRooms.energy;
-      } else if (!solved && newRooms.energy < minSolvedEnergy) {
-        const hash = newRooms.hash();
-        if (!exploring[hash] || exploring[hash] > newRooms.energy) {
-          exploring[hash] = newRooms.energy;
-          runner(newRooms, depth + 1);
-        }
-      }
+  const queue = [{ room: new Rooms(input) }];
+  const amphipods = Object.keys(queue[0].room.amphipods);
+
+  while (queue.length > 0) {
+    iter++;
+    const { room: baseRoom, move } = queue.shift();
+    const room = move ? new Rooms(baseRoom).move(...move) : baseRoom;
+    if (visited.has(room.hash())) {
+      continue;
     }
+    visited.add(room.hash());
+    if (room.isSolved()) {
+      console.log(`Tried ${iter} iterations, min energy`, room.energy);
+      return room.energy;
+    }
+    amphipods.forEach(amphipod => {
+      queue.push(...room.validMoves(amphipod).map(d => ({
+        room,
+        energy: room.energy + energies[amphipod[0]],
+        move: [amphipod, d],
+      })));
+    });
+    queue.sort((q1, q2) => q1.energy - q2.energy);
   }
-  runner(new Rooms(input), 0);
-  console.log(`Tried ${iter} iterations, min energy`, minSolvedEnergy);
-  return minSolvedEnergy;
 }
 
-/*
 if (solve(test) !== 12521) {
   throw new Error('Test failed');
 }
@@ -344,5 +341,4 @@ if (solve(makePart2(test)) !== 44169) {
 }
 
 console.log('Part 1', solve(input));
-*/
 console.log('Part 2', solve(makePart2(input), 54500));
